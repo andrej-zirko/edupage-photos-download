@@ -2,12 +2,38 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs').promises;
 
+if (process.argv.length < 3) {
+  console.error('❌ Error: Missing required BASE_URL argument');
+  console.log('Usage: node index.js "<target-url>"');
+  console.log('Note: Wrap URLs with special characters in quotes!');
+  console.log('Example: node index.js "https://www.zsgrosslingova.sk/gallery-1"');
+  process.exit(1);
+}
+
+const isValidUrl = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+if (!isValidUrl(process.argv[2])) {
+  console.error('❌ Invalid URL format detected');
+  console.log('Common issues:');
+  console.log('- Missing URL protocol (https://)');
+  console.log('- Unescaped special characters (# or :) - use quotes!');
+  console.log('- Malformed URL structure');
+  process.exit(1);
+}
+
 // ======================
 // CONSTANT CONFIGURATION
 // ======================
 const CONFIG = {
   DOWNLOAD_DIR: 'photos',
-  BASE_URL: 'https://www.zsgrosslingova.sk/a/fotogaleria-ms#photos:text/text37:203',
+  BASE_URL: process.argv[2],
   TIMEOUTS: {
     DOWNLOAD: 30000,
     ELEMENT_VISIBLE: 15000,
